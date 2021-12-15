@@ -1,23 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { v4 as uuid } from 'uuid'
 
 @Injectable()
 export class UserService {
   constructor(@InjectModel(User) private readonly UserModel: typeof User){}
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    return await this.UserModel.create({id: uuid(), ...createUserDto})
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll(): Promise<User[]>{
+    return await this.UserModel.findAll()
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(username: string): Promise<User> {
+    const result = await this.UserModel.findOne({ where: { username } })
+    if(!result) throw new NotFoundException()
+    return result
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
