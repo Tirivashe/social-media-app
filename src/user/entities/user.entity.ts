@@ -1,4 +1,5 @@
-import { AllowNull, Column, DataType, Default, IsEmail, IsNull, IsNumeric, IsUUID, Max, Min, Model, NotEmpty, PrimaryKey, Table, Unique } from "sequelize-typescript";
+import { AllowNull, Column, DataType, Default, IsEmail, IsNull, IsNumeric, IsUUID, Max, Min, Model, NotEmpty, PrimaryKey, Table, Unique, BeforeCreate } from "sequelize-typescript";
+import * as bcrypt from 'bcrypt'
 @Table
 export class User extends Model {
   @PrimaryKey
@@ -65,4 +66,9 @@ export class User extends Model {
   @Column
   isAdmin: boolean
 
+  //this is a sequelize hook to hash the password before a new entry is created in the database. Method has to be static
+  @BeforeCreate
+  static async hashPassword(user: User){
+    user.password = await bcrypt.hash(user.password, 10)
+  }
 }
