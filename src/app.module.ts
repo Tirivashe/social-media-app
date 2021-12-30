@@ -1,10 +1,17 @@
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import { config } from './config/db.config';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
+import { DatabaseModule } from './core/database/database.module';
 
 @Module({
-  imports: [UserModule, SequelizeModule.forRoot(config), AuthModule],
+  imports: [
+    UserModule, 
+    AuthModule,
+    DatabaseModule,
+    ConfigModule.forRoot({
+      isGlobal: true
+    }),
+  ],
 })
 export class AppModule {}
